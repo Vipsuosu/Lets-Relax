@@ -131,7 +131,10 @@ class beatmap:
 		"""
 		self.songName = data["song_name"]
 		self.fileMD5 = data["beatmap_md5"]
-		self.rankedStatus = int(data["ranked"])
+		if glob.conf.extra["type"] == "relax":
+			self.rankedStatus = 2
+		else:
+			self.rankedStatus = int(data["ranked"])
 		self.rankedStatusFrozen = int(data["ranked_status_freezed"])
 		self.beatmapID = int(data["beatmap_id"])
 		self.beatmapSetID = int(data["beatmapset_id"])
@@ -211,18 +214,18 @@ class beatmap:
 		self.OD = float(mainData["diff_overall"])
 
 		# Determine stars for every mode
-		self.starsStd = 0.0
-		self.starsTaiko = 0.0
-		self.starsCtb = 0.0
-		self.starsMania = 0.0
+		self.starsStd = 0
+		self.starsTaiko = 0
+		self.starsCtb = 0
+		self.starsMania = 0
 		if dataStd is not None:
-			self.starsStd = float(dataStd["difficultyrating"])
+			self.starsStd = dataStd["difficultyrating"]
 		if dataTaiko is not None:
-			self.starsTaiko = float(dataTaiko["difficultyrating"])
+			self.starsTaiko = dataTaiko["difficultyrating"]
 		if dataCtb is not None:
-			self.starsCtb = float(dataCtb["difficultyrating"])
+			self.starsCtb = dataCtb["difficultyrating"]
 		if dataMania is not None:
-			self.starsMania = float(dataMania["difficultyrating"])
+			self.starsMania = dataMania["difficultyrating"]
 
 		self.maxCombo = int(mainData["max_combo"]) if mainData["max_combo"] is not None else 0
 		self.hitLength = int(mainData["hit_length"])
