@@ -7,13 +7,13 @@
         "HARDROCK": true,
         "SUDDENDEATH": true,
         "DOUBLETIME": true,
-        "RELAX": false,
+        "RELAX": true,
         "HALFTIME": true,
         "NIGHTCORE": true,
         "FLASHLIGHT": true,
-        "AUTOPLAY": false,
+        "AUTOPLAY": true,
         "SPUNOUT": true,
-        "RELAX2": false,
+        "RELAX2": true,
         "PERFECT": true,
         "KEY4": true,
         "KEY5": true,
@@ -29,14 +29,17 @@
         "KEY1": true,
         "KEY3": true,
         "KEY2": true,
-        "SCOREV2": false
+        "SCOREV2": true
     },
     "submit-config": {
-        "max-std-pp": 700,
+        "max-std-pp": 5500,
         "score-overwrite": "score"
     },
     "allowed-beatmap-rankstatus": [ 2, 3, 4 ],
     "scoreboard": {
         "ppboard": false
-    }
+    },
+    "type": "relax",
+    "webhook": "https://discordapp.com/api/webhooks/485539881624403998/nvz14NtiTZWI4FIVLzZAQaPNiD0TmBF2GvSqcW3EX0p4tJfT3lLJ7IPeegbR3_3oBgPi",
+	"secret-webhook-url": "https://discordapp.com/api/webhooks/485539881624403998/nvz14NtiTZWI4FIVLzZAQaPNiD0TmBF2GvSqcW3EX0p4tJfT3lLJ7IPeegbR3_3oBgPi"
 }
