@@ -28,6 +28,7 @@ from objects import glob
 from objects import score
 from objects import scoreboard
 from secret import butterCake
+from dhooks.discord_hooks import Webhook
 
 MODULE_NAME = "submit_modular"
 class handler(requestsManager.asyncRequestHandler):
@@ -322,7 +323,7 @@ class handler(requestsManager.asyncRequestHandler):
 			# Score has been submitted, do not retry sending the score if
 			# there are exceptions while building the ranking panel
 			keepSending = False
-
+			
 			# At the end, check achievements
 			if s.passed:
 				new_achievements = secret.achievements.utils.unlock_achievements(s, beatmapInfo, newUserData)
@@ -384,19 +385,108 @@ class handler(requestsManager.asyncRequestHandler):
 				log.debug("Generated output for online ranking screen!")
 				log.debug(msg)
 
-
+				url = glob.conf.config["server"]["serverurl"]
 				# send message to #announce if we're rank #1
 				if newScoreboard.personalBestRank == 1 and s.completed == 3 and restricted == False:
-					annmsg = "[https://ripple.moe/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
+					annmsg = "[{}/?u={} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({}) {}pp".format(
+						url,
 						userID,
 						username.encode().decode("ASCII", "ignore"),
 						beatmapInfo.beatmapID,
 						beatmapInfo.songName.encode().decode("ASCII", "ignore"),
-						gameModes.getGamemodeFull(s.gameMode)
+						gameModes.getGamemodeFull(s.gameMode),
+						round(s.pp, 2)
 					)
 					params = urlencode({"k": glob.conf.config["server"]["apikey"], "to": "#announce", "msg": annmsg})
 					requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
+					# upon new #1 = send the score to the discord bot
+					# s=0 = regular && s=1 = relax
+					ppGained = newUserData["pp"] - oldUserData["pp"]
+					gainedRanks = oldRank - rankInfo["currentRank"]
+					# webhook to discord
 
+					#TEMPORARY mods handle
+
+					if s.mods == 0:
+						ScoreMods = "NM"
+					if s.mods == 128:
+						ScoreMods = "RX"
+					if s.mods == 192:
+						ScoreMods = "DTRX"
+					if s.mods == 200:
+						ScoreMods = "HDDTRX"
+					if s.mods == 144:
+						ScoreMods = "HRRX"
+					if s.mods == 136:
+						ScoreMods = "HDRX"
+					if s.mods == 152:
+						ScoreMods = "HDHRRX"
+					if s.mods == 64:
+						ScoreMods = "DT"
+					if s.mods == 72:
+						ScoreMods = "HDDT"
+					if s.mods == 24:
+						ScoreMods = "HDHR"
+					if s.mods == 640:
+						ScoreMods = "NCRX"
+					if s.mods == 648:
+						ScoreMods = "HDNCRX"
+					if s.mods == 664:
+						ScoreMods = "HDNCHRRX"
+					if s.mods == 208:
+						ScoreMods = "DTHRRX"
+					if s.mods == 216:
+						ScoreMods = "HDDTHRRX"
+					type = glob.conf.extra["type"]
+					url = glob.conf.extra["webhook"]
+
+					if type == "regular":
+						embed = Webhook(url, color=0x35b75c)
+						embed.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://i.imgur.com/rdm3W9t.png')
+						embed.set_desc("Achieved a Score on mode **{}**, {} +{} on regular!".format(
+						gameModes.getGamemodeFull(s.gameMode),
+						beatmapInfo.songName.encode().decode("ASCII", "ignore"),
+						ScoreMods
+						))
+						embed.add_field(name='Total: {}pp'.format(
+						float("{0:.2f}".format(s.pp))
+						),value='Gained: +{}pp'.format(
+						float("{0:.2f}".format(ppGained))
+						))
+						embed.add_field(name='Actual rank: {}'.format(
+						rankInfo["currentRank"]
+						),value='[Download Link](http://mirror.catgirls.fun/d/{})'.format(
+						beatmapInfo.beatmapSetID
+						))
+						embed.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(
+						beatmapInfo.beatmapSetID
+						))
+						embed.post()
+					else:
+						url = 'https://discordapp.com/api/webhooks/494463377637113866/UTybLE9Tmhu6oUYPZZNTDEpeLYy7iq3Gkt0BGLgbylpqldjXQVzYK0WvNGoTqxaU8iry'
+						embed = Webhook(url, color=0x9627c5)
+						embed.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://i.imgur.com/rdm3W9t.png')
+						embed.set_desc("Achieved #1 on mode **{}**, {} +{} on relax!".format(
+						gameModes.getGamemodeFull(s.gameMode),
+						beatmapInfo.songName.encode().decode("ASCII", "ignore"),
+						ScoreMods
+						))
+						embed.add_field(name='Total: {}pp'.format(
+						float("{0:.2f}".format(s.pp))
+						),value='Gained: +{}pp'.format(
+						float("{0:.2f}".format(ppGained))
+						))
+						embed.add_field(name='Actual rank: {}'.format(
+						rankInfo["currentRank"]
+						),value='[Download Link](http://storage.hatsunai.me/d/{})'.format(
+						beatmapInfo.beatmapSetID
+						))
+						embed.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(
+						beatmapInfo.beatmapSetID
+						))
+						embed.post()
+						
+					
 				# Write message to client
 				self.write(msg)
 			else:
