@@ -463,7 +463,6 @@ class handler(requestsManager.asyncRequestHandler):
 						))
 						embed.post()
 					else:
-						url = 'https://discordapp.com/api/webhooks/494463377637113866/UTybLE9Tmhu6oUYPZZNTDEpeLYy7iq3Gkt0BGLgbylpqldjXQVzYK0WvNGoTqxaU8iry'
 						embed = Webhook(url, color=0x9627c5)
 						embed.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://i.imgur.com/rdm3W9t.png')
 						embed.set_desc("Achieved #1 on mode **{}**, {} +{} on relax!".format(
